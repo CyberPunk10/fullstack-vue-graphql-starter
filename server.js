@@ -9,7 +9,7 @@ const typeDefs = fs.readFileSync(filePath, 'utf-8')
 const resolvers = require('./resolvers')
 
 // import Environment Variables and Mongoose models
-require('dotenv').config({ path: 'variables.env' })
+require('dotenv').config({ path: '.env' })
 const User = require('./models/User')
 const Post = require('./models/Post')
 
