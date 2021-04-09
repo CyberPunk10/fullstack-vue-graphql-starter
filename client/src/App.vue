@@ -67,7 +67,7 @@
 
       <!-- Search input -->
       <v-text-field
-       height="100%"
+        height="100%"
         flex
         prepend-icon="search"
         placeholder="Search posts"

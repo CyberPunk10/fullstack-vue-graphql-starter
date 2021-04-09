@@ -2,25 +2,26 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import vuetify from './plugins/vuetify';
+import vuetify from './plugins/vuetify'
 import '@babel/polyfill'
 
-import ApolloClient from 'apollo-boost'
-import VueApollo from 'vue-apollo'
+import ApolloClient from "apollo-boost"
+import VueApollo from "vue-apollo"
 
 Vue.use(VueApollo)
 
 // Setup ApolloClient
-const defaultClient = new ApolloClient({
-  uri: 'http://localhost:4000/graphql'
+export const defaultClient = new ApolloClient({ // exoprt for vuex
+  uri: "http://localhost:4000/graphql"
 })
 
-const apolloProveder = new VueApollo({ defaultClient })
+const apolloProvider = new VueApollo({ defaultClient })
 
 Vue.config.productionTip = false
 
 new Vue({
-  provide: apolloProveder.provide(),
+  provide: apolloProvider.provide(),
+  // apolloProvider,
   router,
   store,
   vuetify,
