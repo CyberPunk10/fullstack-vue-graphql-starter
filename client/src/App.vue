@@ -38,6 +38,20 @@
             {{item.title}}
           </v-list-item-content>
         </v-list-item>
+
+        <!-- Signout button -->
+        <v-list-item
+          v-if="user"
+          @click="handleSignoutUser"
+          to="/signin"
+        >
+          <v-list-item-action>
+            <v-icon>exit_to_app</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            Signout
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -94,6 +108,42 @@
           >{{item.icon}}</v-icon>
           {{item.title}}
         </v-btn>
+
+        <!-- Profile button -->
+        <v-btn
+          v-if="user"
+          depressed
+          color="primary"
+          class="text--text"
+          to="/profile"
+        >
+          <v-icon
+            class="hidden-sm-only"
+            left
+          >account_box</v-icon>
+          <v-badge
+            right
+            color="accent"
+          >
+            <span slot="badge">1</span>
+            Profile
+          </v-badge>
+        </v-btn>
+        <!-- Signout button -->
+        <v-btn
+          v-if="user"
+          @click="handleSignoutUser"
+          depressed
+          color="primary"
+          class="text--text"
+          to="/signin"
+        >
+          <v-icon
+            class="hidden-sm-only"
+            left
+          >exit_to_app</v-icon>
+          Signout
+        </v-btn>
       </v-toolbar-items>
     </v-app-bar>
 
@@ -116,6 +166,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: "App",
   data() {
@@ -124,19 +175,39 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['user']),
     horizontalNavItems() {
-      return [
+      let items = [
         { icon: 'chat', title: 'Posts', link: '/posts' },
         { icon: 'lock_open', title: 'Sign In', link: '/signin' },
         { icon: 'create', title: 'Sign Up', link: '/signup' },
       ]
+      if (this.user) {
+        items = [
+          { icon: 'chat', title: 'Posts', link: '/posts' }
+        ]
+      }
+      return items
     },
     sideNavLinks() {
-      return [
+      let items = [
         { icon: 'chat', title: 'Posts', link: '/posts' },
         { icon: 'lock_open', title: 'Sign In', link: '/signin' },
         { icon: 'create', title: 'Sign Up', link: '/signup' },
       ]
+      if (this.user) {
+        items = [
+          { icon: 'chat', title: 'Posts', link: '/posts' },
+          { icon: 'stars', title: 'Create post', link: '/post/add' },
+          { icon: 'account_box', title: 'Profile', link: '/profile' }
+        ]
+      }
+      return items
+    }
+  },
+  methods: {
+    handleSignoutUser() {
+      this.$store.dispatch('signoutUser')
     }
   }
 }
