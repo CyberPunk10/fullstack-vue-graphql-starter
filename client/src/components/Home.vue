@@ -119,7 +119,7 @@ export default {
   data() {
     return {
       // for EXAMPLE 1
-      // posts: []
+      // postsFromData: []
 
       // for EXAMPLE 2
       getPosts: gql`
@@ -174,7 +174,7 @@ export default {
       `,
       result({ data, loading }) {
         if (!loading) {
-          this.posts = data.getPosts
+          this.postsFromData = data.getPosts
         }
       },
       error(err) {
