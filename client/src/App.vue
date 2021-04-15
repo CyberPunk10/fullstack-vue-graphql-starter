@@ -12,7 +12,6 @@
         <v-app-bar-nav-icon @click="sideNav = !sideNav"></v-app-bar-nav-icon>
         <router-link
           to="/"
-          tag="span"
           style="cursor: pointer"
         >
           <h1 class="title pl-3">VueShare</h1>
@@ -70,10 +69,9 @@
       <v-app-bar-title class="hidden-xs-only">
         <router-link
           to="/"
-          tag="span"
           style="cursor: pointer"
         >
-          VueShare
+          <span>VueShare</span>
         </router-link>
       </v-app-bar-title>
 
@@ -156,6 +154,52 @@
           <!-- If using vue-router -->
           <router-view></router-view>
         </transition>
+
+        <!-- Auth snackbar -->
+        <v-snackbar
+          v-model="authSnackbar"
+          :timeout="5000"
+          left
+        >
+          <v-icon>check_circle</v-icon>
+          <span>You are now signed in!</span>
+
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="pink"
+              text
+              v-bind="attrs"
+              @click="authSnackbar = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
+
+        <!-- Auth error snackbar -->
+        <v-snackbar
+          v-if="authError"
+          v-model="authErrorSnackbar"
+          :timeout="5000"
+          left
+          color="info"
+        >
+          <v-icon>cancel</v-icon>
+          <span>{{authError.message}}</span>
+
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="pink"
+              text
+              v-bind="attrs"
+              to="/signin"
+              @click="authSnackbar = false"
+            >
+              Signin
+            </v-btn>
+          </template>
+        </v-snackbar>
+
       </v-container>
     </v-main>
 
@@ -171,11 +215,27 @@ export default {
   name: "App",
   data() {
     return {
-      sideNav: false
+      sideNav: false,
+      authSnackbar: false,
+      authErrorSnackbar: false,
+    }
+  },
+  watch: {
+    user(newValue, oldValue) {
+      // if we had no value for user before, show shackbar
+      // console.log('new value', newValue)
+      // console.log('old value', oldValue)
+      if (oldValue === null) this.authSnackbar = true
+    },
+    authError(value) {
+      // if auth error is not null, show auth error snackbar
+      if (value !== null) {
+        this.authErrorSnackbar = true
+      }
     }
   },
   computed: {
-    ...mapGetters(['user']),
+    ...mapGetters(['authError', 'user']),
     horizontalNavItems() {
       let items = [
         { icon: 'chat', title: 'Posts', link: '/posts' },

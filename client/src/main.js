@@ -8,16 +8,17 @@ import '@babel/polyfill'
 import ApolloClient from "apollo-boost"
 import VueApollo from "vue-apollo"
 
+import AlertForm from "./components/Shared/AlertForm.vue"
+
+// Register global component
+Vue.component('AlertForm', AlertForm)
+
 Vue.use(VueApollo)
 
 // Setup ApolloClient
 export const defaultClient = new ApolloClient({ // exoprt for vuex
   uri: "http://localhost:4000/graphql",
 
-  // include auth token with request made to backend
-  fetchOption: {
-    credentials: 'include'
-  },
   request: operations => {
     // if no token wich key of 'token' in localStorage, add it
     if (!localStorage.token) {
@@ -26,6 +27,10 @@ export const defaultClient = new ApolloClient({ // exoprt for vuex
 
     // operarion adds the token to an authorization header, which is sent to backend
     operations.setContext({
+      // include auth token with request made to backend
+      fetchOption: {
+        credentials: 'include'
+      },
       headers: {
         authorization: localStorage.getItem('token')
       }
@@ -39,6 +44,12 @@ export const defaultClient = new ApolloClient({ // exoprt for vuex
     if (graphQLErrors) {
       for (let err of graphQLErrors) {
         console.dir(err)
+        if (err.name === 'AuthenticationError') {
+          // set auth error in state (to show in snackbar)
+          store.commit('setAuthError', err)
+          // signout uset (to clear token)
+          store.dispatch('signoutUser')
+        }
       }
     }
   }
@@ -49,8 +60,8 @@ const apolloProvider = new VueApollo({ defaultClient })
 Vue.config.productionTip = false
 
 new Vue({
-  provide: apolloProvider.provide(),
-  // apolloProvider,
+  // provide: apolloProvider.provide(),
+  apolloProvider,
   router,
   store,
   vuetify,

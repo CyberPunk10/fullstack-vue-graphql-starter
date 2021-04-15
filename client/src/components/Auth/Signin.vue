@@ -10,9 +10,26 @@
         offset-sm3
       >
         <h1>Sign in</h1>
+
+        <!-- Error alert -->
+        <v-layout
+          v-if="error"
+          row
+          wrap
+        >
+          <v-flex>
+            <AlertForm :message="error.message"></AlertForm>
+          </v-flex>
+        </v-layout>
+        <!-- Signin form -->
         <v-card color="primary">
           <v-container>
-            <v-form @submit.prevent="handleSigninUser">
+            <v-form
+              @submit.prevent="handleSigninUser"
+              v-model="isFormValid"
+              lazy-validation
+              ref="form"
+            >
               <v-layout>
                 <v-flex>
                   <v-text-field
@@ -21,6 +38,7 @@
                     type="text"
                     required
                     v-model="username"
+                    :rules="usernameRules"
                   >
                   </v-text-field>
                 </v-flex>
@@ -34,6 +52,7 @@
                     type="password"
                     required
                     v-model="password"
+                    :rules="passwordRules"
                   >
                   </v-text-field>
                 </v-flex>
@@ -41,12 +60,15 @@
 
               <v-layout>
                 <v-flex>
+
                   <v-btn
                     color="accent"
                     type="submit"
-                  >
-                    Signin
+                    :loading="loading"
+                    :disabled="!isFormValid || loading"
+                  > Signin
                   </v-btn>
+
                   <h3>Don't have an account?
                     <router-link
                       to="signup"
@@ -71,11 +93,21 @@ export default {
   data() {
     return {
       username: '',
-      password: ''
+      password: '',
+      usernameRules: [
+        username => !!username || "Username is required",
+        username => username.length >= 4 || "Username must be less than characters"
+      ],
+      passwordRules: [
+        password => !!password || "Password is required",
+        password => password.length >= 4 || "Password must be less than characters"
+
+      ],
+      isFormValid: false,
     }
   },
   computed: {
-    ...mapGetters(['user']),
+    ...mapGetters(['loading', 'error', 'user']),
 
   },
   watch: {
@@ -88,13 +120,14 @@ export default {
   },
   methods: {
     handleSigninUser() {
-      this.$store.dispatch('signinUser', {
-        username: this.username,
-        password: this.password
-      })
+      if (this.$refs.form.validate()) {
+        this.$store.dispatch('signinUser', {
+          username: this.username,
+          password: this.password
+        })
+      }
     }
   }
-
 }
 </script>
 
